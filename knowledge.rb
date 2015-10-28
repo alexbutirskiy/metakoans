@@ -5,36 +5,21 @@
 #   attribute a: 5                # additionaly sets @ to default value - 5
 #   attribute :a { some_method }  # provides default value as block
 #
-module Attributes
-  def init(sym, block)
-    default = nil
-    if sym.is_a? Hash
-      default = sym.values.first
-      sym = sym.keys.first
-    end
+class Module
+  def attribute(sym, &block)
 
-    define_method "#{sym}=" do |val|
-      instance_variable_set "@#{sym}", val
-    end
+    sym, default = sym.is_a?(Hash) ? [sym.keys[0], sym.values[0]] : [sym, nil]
+
+    define_method "#{sym}=", ->(val) { instance_variable_set "@#{sym}", val }
 
     define_method "#{sym}" do
       unless instance_variable_defined? "@#{sym}"
-        default = instance_eval(&block) if block.class == Proc
+        default = instance_eval(&block) if block
         instance_variable_set "@#{sym}", default
       end
       instance_variable_get "@#{sym}"
     end
-
-    define_method "#{sym}?" do
-      send(sym) ? true : false
-    end
-  end
-end
-
-# :nodoc
-class Module
-  def attribute(sym, &block)
-    extend Attributes
-    init(sym, block)
+    
+    define_method "#{sym}?", -> { send(sym) ? true : false }
   end
 end
