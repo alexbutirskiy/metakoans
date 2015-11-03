@@ -7,8 +7,7 @@
 #
 class Module
   def attribute(sym, &block)
-
-    sym, default = sym.is_a?(Hash) ? [sym.keys[0], sym.values[0]] : [sym, nil]
+    sym, default = sym.is_a?(Hash) ? sym.to_a[0] : sym
 
     define_method "#{sym}=", ->(val) { instance_variable_set "@#{sym}", val }
 
@@ -19,7 +18,6 @@ class Module
       end
       instance_variable_get "@#{sym}"
     end
-    
-    define_method "#{sym}?", -> { send(sym) ? true : false }
+    define_method "#{sym}?", -> { send(sym) }
   end
 end
