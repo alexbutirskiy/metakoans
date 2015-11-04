@@ -18,6 +18,6 @@ class Module
       end
       instance_variable_get "@#{sym}"
     end
-    define_method "#{sym}?", -> { send(sym) }
+    define_method "#{sym}?", -> { !!send(sym) }
   end
 end
