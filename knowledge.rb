@@ -7,9 +7,9 @@
 #
 class Module
   def attribute(sym, &block)
-    sym, default = sym.is_a?(Hash) ? sym.to_a[0] : sym
+    sym, default = sym.is_a?(Hash) ? sym.to_a.first : sym
 
-    define_method "#{sym}=", ->(val) { instance_variable_set "@#{sym}", val }
+    define_method("#{sym}=") { |val| instance_variable_set "@#{sym}", val }
 
     define_method "#{sym}" do
       unless instance_variable_defined? "@#{sym}"
@@ -18,6 +18,6 @@ class Module
       end
       instance_variable_get "@#{sym}"
     end
-    define_method "#{sym}?", -> { !!send(sym) }
+    define_method("#{sym}?") { send(sym) ? true : false }
   end
 end
